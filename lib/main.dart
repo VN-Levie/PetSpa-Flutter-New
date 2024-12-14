@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'navigation_home_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
+import 'package:get/get.dart'; // Thêm package GetX
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
@@ -20,25 +20,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isFirstOpen = true;
-
   @override
   void initState() {
     super.initState();
-    _checkFirstOpen();
-  }
-
-  Future<void> _checkFirstOpen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      // Kiểm tra nếu giá trị "isFirstOpen" chưa được lưu, mặc định là true
-      isFirstOpen = prefs.getBool('isFirstOpen') ?? true;
-
-      // Nếu đây là lần mở đầu tiên, lưu trạng thái mới
-      if (isFirstOpen) {
-        prefs.setBool('isFirstOpen', false);
-      }
-    });
   }
 
   @override
@@ -51,17 +35,15 @@ class _MyAppState extends State<MyApp> {
       systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Pet Spa Application',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: AppTheme.textTheme,
-        platform: TargetPlatform.iOS,
+        platform: TargetPlatform.android,
       ),
-      home: NavigationHomeScreen(
-        isFirstOpen: isFirstOpen,
-      ),
+      home: NavigationHomeScreen(),
     );
   }
 }

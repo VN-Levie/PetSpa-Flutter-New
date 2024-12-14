@@ -8,6 +8,7 @@ import 'package:petspa_flutter/introduction_animation/components/top_back_skip_v
 import 'package:petspa_flutter/introduction_animation/components/welcome_view.dart';
 import 'package:flutter/material.dart';
 import 'package:petspa_flutter/navigation_home_screen.dart';
+import 'package:petspa_flutter/screens/signup/sign_up.dart';
 
 class IntroductionAnimationScreen extends StatefulWidget {
   const IntroductionAnimationScreen({Key? key}) : super(key: key);
@@ -105,20 +106,20 @@ class _IntroductionAnimationScreenState extends State<IntroductionAnimationScree
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => NavigationHomeScreen(isFirstOpen: false),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
+        pageBuilder: (context, animation, secondaryAnimation) => SignUpScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
 
-        return SlideTransition(
-        position: offsetAnimation,
-        child: child,
-        );
-      },
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }
