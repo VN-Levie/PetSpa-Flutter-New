@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:petspa_flutter/app_theme.dart';
 import 'package:petspa_flutter/components/my_button.dart';
 import 'package:petspa_flutter/components/my_textfield.dart';
 
@@ -52,7 +53,7 @@ class _LoginBodyScreenState extends State<LoginBodyScreen> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.dismissibleBackground,
         body: ListView(
           padding: const EdgeInsets.fromLTRB(0, 400, 0, 0),
           shrinkWrap: true,

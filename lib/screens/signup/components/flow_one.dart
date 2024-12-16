@@ -22,17 +22,19 @@ class SignUpOne extends StatefulWidget {
 }
 
 class _SignUpOneState extends State<SignUpOne> {
+  final nameController = TextEditingController().obs;
   final emailController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
+  final passwordController2 = TextEditingController().obs;
   SignUpController signUpController = Get.put(SignUpController());
   FlowController flowController = Get.put(FlowController());
 
   String dropdownValue = list.first;
   String _errorMessage = "";
-
+  bool isLoading = false; // Trạng thái loading
   @override
   Widget build(BuildContext context) {
-    debugPrint(signUpController.userType);
+   
 
     return SafeArea(
       child: Padding(
@@ -71,44 +73,43 @@ class _SignUpOneState extends State<SignUpOne> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User Type Dropdown
+                  // Name Input
                   Text(
-                    "User Type",
+                    "Name",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       color: HexColor("#8d8d8d"),
                     ),
                   ),
-                  DropdownButton<String>(
-                    value: dropdownValue,
-                    icon: const Icon(Icons.arrow_drop_down),
-                    elevation: 16,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: HexColor("#8d8d8d"),
-                    ),
-                    isExpanded: true,
-                    underline: Container(
-                      height: 2,
-                      color: HexColor("#ffffff"),
-                    ),
-                    iconSize: 30,
-                    borderRadius: BorderRadius.circular(20),
-                    onChanged: (String? value) {
-                      setState(() {
-                        dropdownValue = value!;
-                        signUpController.setUserType(value);
-                      });
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: nameController.value,
+                    onChanged: (value) {
+                      signUpController.setName(value);
                     },
-                    items: list.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                    onSubmitted: (value) {
+                      signUpController.setName(value);
+                    },
+                    cursorColor: HexColor("#4f4f4f"),
+                    decoration: InputDecoration(
+                      hintText: "John Doe",
+                      fillColor: HexColor("#f0f3f1"),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                      hintStyle: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: HexColor("#8d8d8d"),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                    ),
                   ),
                   const SizedBox(
-                    height: 1,
+                    height: 5,
                   ),
                   // Email Input
                   Text(
@@ -196,26 +197,56 @@ class _SignUpOneState extends State<SignUpOne> {
                       focusColor: HexColor("#44564a"),
                     ),
                   ),
+                  // Confirm Password Input
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    "Confirm Password",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: HexColor("#8d8d8d"),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    onChanged: (value) {
+                      signUpController.setPassword2(value);
+                    },
+                    onSubmitted: (value) {
+                      signUpController.setPassword2(value);
+                    },
+                    obscureText: true,
+                    controller: passwordController2.value,
+                    cursorColor: HexColor("#4f4f4f"),
+                    decoration: InputDecoration(
+                      hintText: "*************",
+                      fillColor: HexColor("#f0f3f1"),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                      hintStyle: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: HexColor("#8d8d8d"),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      focusColor: HexColor("#44564a"),
+                    ),
+                  ),
+
                   const SizedBox(
                     height: 5,
                   ),
                   // Proceed Button
                   MyButton(
+                    isLoading: isLoading,
                     buttonText: 'Proceed',
                     onPressed: () async {
-                      if (signUpController.userType != null && signUpController.email != null && signUpController.password != null) {
-                        bool isRegistered = await signUpController.registerUser(
-                          signUpController.email.toString(),
-                          signUpController.password.toString(),
-                        );
-                        debugPrint(isRegistered.toString());
-                        if (isRegistered) {
-                          Get.snackbar("Success", "User Registered");
-                          flowController.setFlow(2);
-                        } else {
-                          Get.snackbar("Error", "Please fill all the fields");
-                        }
-                      }
+                      await processSignUp();
                     },
                   ),
                   // Login Navigation
@@ -255,6 +286,122 @@ class _SignUpOneState extends State<SignUpOne> {
         ),
       ),
     );
+  }
+
+  Future<void> processSignUp() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      if (signUpController.name == null || signUpController.name!.isEmpty) {
+        Get.snackbar(
+          "Error",
+          "Name cannot be empty!",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+      if (signUpController.email == null || signUpController.email!.isEmpty) {
+        Get.snackbar(
+          "Error",
+          "Email cannot be empty!",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+      if (signUpController.password == null || signUpController.password!.isEmpty) {
+        Get.snackbar(
+          "Error",
+          "Password cannot be empty!",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+      if (signUpController.password2 == null || signUpController.password2!.isEmpty) {
+        Get.snackbar(
+          "Error",
+          "Confirm Password cannot be empty!",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+      //check if password and confirm password are same
+      if (signUpController.password != signUpController.password2) {
+        Get.snackbar(
+          "Error",
+          "Password and Confirm Password should be same",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.error, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+
+      bool isRegistered = await signUpController.registerUser(
+        signUpController.name.toString(),
+        signUpController.email.toString(),
+        signUpController.password.toString(),
+      );
+      debugPrint(isRegistered.toString());
+      if (isRegistered) {
+        Get.snackbar(
+          "Success",
+          "An email has been sent to your email address. Please enter the OTP to proceed",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(10),
+          borderRadius: 10,
+          icon: Icon(Icons.check_circle, color: Colors.white),
+          duration: Duration(seconds: 3),
+        );
+        flowController.setFlow(2);
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong. Please try again",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(10),
+        borderRadius: 10,
+        icon: Icon(Icons.error, color: Colors.white),
+        duration: Duration(seconds: 3),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void validateEmail(String val) {
