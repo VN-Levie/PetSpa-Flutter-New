@@ -14,8 +14,8 @@ class SignUpThree extends StatefulWidget {
 }
 
 class _SignUpThreeState extends State<SignUpThree> {
-  final SignUpController signUpController = Get.put(SignUpController());
-  final FlowController flowController = Get.put(FlowController());
+  final SignUpController signUpController = Get.find();
+  final FlowController flowController = Get.find();
 
   final TextEditingController emailController = TextEditingController();
   bool isLoading = false;

@@ -1,7 +1,12 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:petspa_flutter/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:petspa_flutter/navigation_home_screen.dart';
 import 'package:petspa_flutter/screens/login/login.dart';
 import 'package:petspa_flutter/screens/signup/sign_up.dart';
+import 'package:petspa_flutter/services/user_storage.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key? key, this.screenIndex, this.iconAnimationController, this.callBackIndex}) : super(key: key);
@@ -15,6 +20,7 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+  final user = UserStorage().getUser();
   List<DrawerList>? drawerList;
   @override
   void initState() {
@@ -55,6 +61,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
         labelName: 'About Us',
         icon: Icon(Icons.info),
       ),
+      DrawerList(
+        index: DrawerIndex.Profile,
+        labelName: 'Profile',
+        icon: Icon(Icons.person),
+      ),
     ];
   }
 
@@ -63,7 +74,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: AppTheme.notWhite.withOpacity(0.5),
+      backgroundColor: AppTheme.nearlyWhite,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -95,20 +106,23 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             ),
                             child: ClipRRect(
                               borderRadius: const BorderRadius.all(Radius.circular(60.0)),
-                              child: Image.asset('assets/images/userImage.png'),
+                              child: Image.asset('assets/images/logo.jpg'),
                             ),
                           ),
                         ),
                       );
                     },
                   ),
+                  const SizedBox(
+                    height: 4,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 4),
                     child: Text(
-                      'Chris Hemsworth',
+                      'Hello, ${user?.name ?? 'Guest'}',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: isLightMode ? AppTheme.grey : AppTheme.white,
+                        color: isLightMode ? AppTheme.active : AppTheme.white,
                         fontSize: 18,
                       ),
                     ),
@@ -122,7 +136,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Divider(
             height: 1,
-            color: AppTheme.grey.withAlpha((0.6 * 255).toInt()),
+            color: AppTheme.captionColor.withAlpha((0.6 * 255).toInt()),
           ),
           Expanded(
             child: ListView.builder(
@@ -135,89 +149,96 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           Divider(
-            height: 1,
-            color: AppTheme.grey.withOpacity(0.6),
+            height: 2,
+            color: AppTheme.captionColor.withAlpha((0.6 * 255).toInt()),
           ),
           Column(
             children: <Widget>[
-              ListTile(
-                title: Text(
-                  'Sign Out',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontName,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppTheme.darkText,
-                  ),
-                  textAlign: TextAlign.left,
+              if (user != null) // Kiểm tra nếu user đã đăng nhập
+                Column(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(
+                        'Sign Out',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontName,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppTheme.darkText,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      trailing: FaIcon(
+                        FontAwesomeIcons.arrowRightFromBracket,
+                        // color: Colors.red,
+                      ),
+                      onTap: () async {
+                        await UserStorage().logout();
+                        Get.offAll(() => NavigationHomeScreen());
+                      },
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.bottom,
+                    ),
+                  ],
                 ),
-                trailing: Icon(
-                  Icons.power_settings_new,
-                  color: Colors.red,
+              if (user == null) // Kiểm tra nếu user chưa đăng nhập
+                Column(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(
+                        'Sign In',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontName,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppTheme.darkText,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      trailing: FaIcon(
+                        FontAwesomeIcons.arrowRightToBracket,
+                        size: 18,
+                        // color: Colors.red,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontName,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppTheme.darkText,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      trailing: FaIcon(
+                        FontAwesomeIcons.userPlus,
+                        size: 18,
+                        // color: Colors.red,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.bottom,
+                    ),
+                  ],
                 ),
-                onTap: () {
-                  onTapped();
-                },
+              const SizedBox(
+                height: 4,
               ),
-              SizedBox(
-                height: MediaQuery.of(context).padding.bottom,
-              )
-            ],
-          ),
-          Divider(
-            height: 1,
-            color: AppTheme.grey.withOpacity(0.6),
-          ),
-          Column(
-            children: <Widget>[
-              ListTile(
-                title: Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontName,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppTheme.darkText,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                trailing: Icon(
-                  Icons.login,
-                  color: Colors.green,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                title: Text(
-                  'Register',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontName,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppTheme.darkText,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                trailing: Icon(
-                  Icons.app_registration,
-                  color: Colors.blue,
-                ),
-                onTap: () {
-                  // Handle register action
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
-                  );
-                },
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).padding.bottom,
-              )
             ],
           ),
         ],
@@ -233,8 +254,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        splashColor: Colors.grey.withOpacity(0.1),
-        highlightColor: Colors.transparent,
+        splashColor: AppTheme.active.withAlpha((0.1 * 255).toInt()),
+        highlightColor: AppTheme.captionColor.withAlpha((0.1 * 255).toInt()),
         onTap: () {
           navigationtoScreen(listData.index!);
         },
@@ -247,17 +268,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Container(
                     width: 6.0,
                     height: 46.0,
-                    // decoration: BoxDecoration(
-                    //   color: widget.screenIndex == listData.index
-                    //       ? Colors.blue
-                    //       : Colors.transparent,
-                    //   borderRadius: new BorderRadius.only(
-                    //     topLeft: Radius.circular(0),
-                    //     topRight: Radius.circular(16),
-                    //     bottomLeft: Radius.circular(0),
-                    //     bottomRight: Radius.circular(16),
-                    //   ),
-                    // ),
+                    decoration: BoxDecoration(
+                      color: widget.screenIndex == listData.index ? AppTheme.active : Colors.transparent,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(0),
+                        topRight: Radius.circular(16),
+                        bottomLeft: Radius.circular(0),
+                        bottomRight: Radius.circular(16),
+                      ),
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.all(4.0),
@@ -266,9 +285,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       ? Container(
                           width: 24,
                           height: 24,
-                          child: Image.asset(listData.imageName, color: widget.screenIndex == listData.index ? Colors.blue : AppTheme.nearlyBlack),
+                          child: Image.asset(listData.imageName, color: widget.screenIndex == listData.index ? AppTheme.active : AppTheme.nearlyBlack),
                         )
-                      : Icon(listData.icon?.icon, color: widget.screenIndex == listData.index ? Colors.blue : AppTheme.nearlyBlack),
+                      : Icon(listData.icon?.icon, color: widget.screenIndex == listData.index ? AppTheme.active : AppTheme.nearlyBlack),
                   const Padding(
                     padding: EdgeInsets.all(4.0),
                   ),
@@ -277,7 +296,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
-                      color: widget.screenIndex == listData.index ? Colors.black : AppTheme.nearlyBlack,
+                      color: widget.screenIndex == listData.index ? AppTheme.captionColor : AppTheme.nearlyBlack,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -296,7 +315,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             width: MediaQuery.of(context).size.width * 0.75 - 64,
                             height: 46,
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.2),
+                              color: AppTheme.active.withOpacity(0.2),
                               borderRadius: new BorderRadius.only(
                                 topLeft: Radius.circular(0),
                                 topRight: Radius.circular(28),
@@ -329,6 +348,7 @@ enum DrawerIndex {
   About,
   Invite,
   Testing,
+  Profile,
 }
 
 class DrawerList {

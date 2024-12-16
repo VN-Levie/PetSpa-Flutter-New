@@ -19,8 +19,8 @@ class SignUpTwo extends StatefulWidget {
 
 class _SignUpTwoState extends State<SignUpTwo> {
   final otpController = TextEditingController().obs;
-  final SignUpController signUpController = Get.put(SignUpController());
-  final FlowController flowController = Get.put(FlowController());
+  final SignUpController signUpController = Get.find();
+  final FlowController flowController = Get.find();
   final int timeResend = 30; // Thời gian đợi để gửi lại OTP
   // Variables for Resend OTP
   bool isResendDisabled = false;
@@ -133,6 +133,8 @@ class _SignUpTwoState extends State<SignUpTwo> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (signUpController.userId == null) {
+        print("signUpController ${signUpController}");
+        print("User ID is null");
         Get.offAll(() => NavigationHomeScreen());
       }
     });

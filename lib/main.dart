@@ -2,12 +2,17 @@ import 'dart:io';
 import 'package:petspa_flutter/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:petspa_flutter/controller/flow_controller.dart';
+import 'package:petspa_flutter/controller/sign_up_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'navigation_home_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get/get.dart'; // Thêm package GetX
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Get.put(FlowController());
+  Get.put(SignUpController());
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown

@@ -17,7 +17,7 @@ class SignUpBodyScreen extends StatefulWidget {
 }
 
 class _SignUpBodyScreenState extends State<SignUpBodyScreen> {
-  FlowController flowController = Get.put(FlowController());
+  FlowController flowController = Get.find();
   late int _currentFlow;
 
   @override
@@ -47,14 +47,14 @@ class _SignUpBodyScreenState extends State<SignUpBodyScreen> {
             //hủy quá trình đăng ký và quay lại màn hình chính
             // Navigator.of(context).pop();
           } else {
-             Get.offAll(() => NavigationHomeScreen());
+            Get.offAll(() => NavigationHomeScreen());
           }
         }
       },
       child: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor: AppTheme.dismissibleBackground,
+          backgroundColor: AppTheme.drawerHeader,
           body: ListView(
             padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
             shrinkWrap: false,

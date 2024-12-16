@@ -2,31 +2,38 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:petspa_flutter/app_const.dart';
+import 'package:petspa_flutter/services/user_storage.dart';
 
 class RestService {
   static final FlutterSecureStorage storage = FlutterSecureStorage();
 
   // Hàm lấy token mới bằng refresh token
   static Future<String?> refreshToken() async {
-    String? refreshToken = await storage.read(key: 'refresh_token');
-    if (refreshToken == null) return null;
+    try {
+      String? refreshToken = await UserStorage().getRefreshToken();
+      if (refreshToken == null) return null;
 
-    final response = await http.post(
-      Uri.parse('${AppConst.apiEndpoint}/auth/refresh-token'),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode({
-        'refresh_token': refreshToken
-      }),
-    );
+      final response = await http.post(
+        Uri.parse('${AppConst.apiEndpoint}/auth/refresh-token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $refreshToken',
+        },
+        body: jsonEncode({
+          'refresh_token': refreshToken
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      var jsonResponse = utf8.decode(response.bodyBytes);
-      var data = jsonDecode(jsonResponse);
-      var newToken = data['jwt'];
-      await storage.write(key: 'jwt_token', value: newToken);
-      return newToken;
+      if (response.statusCode == 200) {
+        var jsonResponse = utf8.decode(response.bodyBytes);
+        var data = jsonDecode(jsonResponse);
+        var newToken = data;
+        print('NewToken: $newToken');
+        await UserStorage().saveToken(newToken, refreshToken);
+        return newToken;
+      }
+    } catch (e) {
+      print('RefreshToken_Error: $e');
     }
     return null;
   }
@@ -67,7 +74,7 @@ class RestService {
     headers ??= {
       'Content-Type': 'application/json'
     };
-    String? token = await storage.read(key: 'jwt_token');
+    String? token = await storage.read(key: 'access_token');
     if (token != null) headers['Authorization'] = 'Bearer $token';
     request.headers.addAll(headers);
 

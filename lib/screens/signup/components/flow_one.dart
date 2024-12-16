@@ -8,6 +8,7 @@ import 'package:petspa_flutter/controller/flow_controller.dart';
 import 'package:petspa_flutter/controller/sign_up_controller.dart';
 import 'package:petspa_flutter/navigation_home_screen.dart';
 import 'package:petspa_flutter/screens/login/login.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 List<String> list = <String>[
   'Pembaca',
@@ -26,16 +27,14 @@ class _SignUpOneState extends State<SignUpOne> {
   final emailController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
   final passwordController2 = TextEditingController().obs;
-  SignUpController signUpController = Get.put(SignUpController());
-  FlowController flowController = Get.put(FlowController());
+  SignUpController signUpController = Get.find();
+  FlowController flowController = Get.find();
 
   String dropdownValue = list.first;
   String _errorMessage = "";
   bool isLoading = false; // Trạng thái loading
   @override
   Widget build(BuildContext context) {
-   
-
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
@@ -47,9 +46,10 @@ class _SignUpOneState extends State<SignUpOne> {
                   onTap: () {
                     Get.offAll(() => NavigationHomeScreen());
                   },
-                  child: const Icon(
-                    Icons.home,
-                    color: Colors.black,
+                  child: FaIcon(
+                    FontAwesomeIcons.house,
+                    size: 27,
+                    // color: Colors.red,
                   ),
                 ),
                 const SizedBox(
