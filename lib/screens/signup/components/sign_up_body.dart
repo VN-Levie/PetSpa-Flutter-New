@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:petspa_flutter/app_theme.dart';
 import 'package:petspa_flutter/controller/flow_controller.dart';
+import 'package:petspa_flutter/navigation_home_screen.dart';
 
 import 'flow_one.dart';
 import 'flow_three.dart';
@@ -27,6 +28,15 @@ class _SignUpBodyScreenState extends State<SignUpBodyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Flow: ${flowController.currentFlow}");
+    // Thực hiện điều hướng sau khi build hoàn tất
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (flowController.signUpSuccess) {
+        flowController.setFlow(1);
+        flowController.setSignUpSuccess(false);
+        Get.offAll(() => NavigationHomeScreen());
+      }
+    });
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
@@ -37,7 +47,7 @@ class _SignUpBodyScreenState extends State<SignUpBodyScreen> {
             //hủy quá trình đăng ký và quay lại màn hình chính
             // Navigator.of(context).pop();
           } else {
-            Navigator.of(context).pop(result); // Cho phép quay lại màn hình trước với kết quả
+             Get.offAll(() => NavigationHomeScreen());
           }
         }
       },

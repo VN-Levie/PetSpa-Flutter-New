@@ -7,6 +7,7 @@ import 'package:petspa_flutter/components/my_button.dart';
 import 'package:petspa_flutter/controller/flow_controller.dart';
 import 'package:petspa_flutter/controller/sign_up_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:petspa_flutter/navigation_home_screen.dart';
 import 'package:petspa_flutter/screens/login/login.dart';
 
 class SignUpTwo extends StatefulWidget {
@@ -44,22 +45,24 @@ class _SignUpTwoState extends State<SignUpTwo> {
 
   // Function to start the countdown for Resend OTP button
   void startCountdown() {
-    setState(() {
-      isResendDisabled = true;
-      countdown = timeResend; // Đếm ngược 30 giây
-    });
-    resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (countdown > 0) {
-        setState(() {
-          countdown--;
-        });
-      } else {
-        setState(() {
-          isResendDisabled = false;
-        });
-        timer.cancel();
-      }
-    });
+    if (mounted) {
+      setState(() {
+        isResendDisabled = true;
+        countdown = timeResend; // Đếm ngược 30 giây
+      });
+      resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (countdown > 0) {
+          setState(() {
+            countdown--;
+          });
+        } else {
+          setState(() {
+            isResendDisabled = false;
+          });
+          timer.cancel();
+        }
+      });
+    }
   }
 
   // Hàm xử lý khi nhấn nút Resend OTP
@@ -105,6 +108,9 @@ class _SignUpTwoState extends State<SignUpTwo> {
               icon: Icon(Icons.check_circle, color: Colors.white),
               duration: Duration(seconds: 3),
             );
+            // flowController.setFlow(1); // Chuyển đến trang thay đổi email
+            flowController.setFlow(1);
+            flowController.setSignUpSuccess(true); // Đặt trạng thái đăng ký thành công
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -125,6 +131,11 @@ class _SignUpTwoState extends State<SignUpTwo> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (signUpController.userId == null) {
+        Get.offAll(() => NavigationHomeScreen());
+      }
+    });
     setState(() {
       countdown = timeResend;
     });
@@ -210,6 +221,8 @@ class _SignUpTwoState extends State<SignUpTwo> {
                               });
 
                               if (isVerified) {
+                                flowController.setFlow(1); // Chuyển đến trang thay đổi email
+                                signUpController.resetState(); // Xóa OTP sau khi xác thực
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -292,7 +305,7 @@ class _SignUpTwoState extends State<SignUpTwo> {
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      text: "Service ID: ",
+                      text: "Help ID: ",
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         color: HexColor("#8d8d8d"),

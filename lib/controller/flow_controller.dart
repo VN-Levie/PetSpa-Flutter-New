@@ -6,4 +6,11 @@ class FlowController extends GetxController {
     currentFlow = flow;
     update();
   }
+
+  bool signUpSuccess = false;
+  void setSignUpSuccess(bool success) {
+    signUpSuccess = success;
+    update();
+  }
+  
 }

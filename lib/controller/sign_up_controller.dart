@@ -81,10 +81,8 @@ class SignUpController extends GetxController {
     );
 
     // Kiểm tra status và xử lý kết quả
-    if (response.status == 201) {
+    if (response.status == 201 || response.status == 200) {
       setUserId(response.data['userId']); // Lưu ID người dùng
-      return true; // Đăng ký thành công
-    } else if (response.status == 200) {
       return true; // Đăng ký thành công
     } else {
       // Hiển thị thông báo lỗi từ server
@@ -220,5 +218,16 @@ class SignUpController extends GetxController {
       Get.snackbar("Error", "An error occurred: $e", snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
       return false;
     }
+  }
+
+  //reset state
+  void resetState() {
+    _userId = null;
+    _name = null;
+    _email = null;
+    _password = null;
+    _password2 = null;
+    _OTP = null;
+    update();
   }
 }
