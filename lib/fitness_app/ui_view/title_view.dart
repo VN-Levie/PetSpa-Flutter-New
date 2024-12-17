@@ -7,13 +7,7 @@ class TitleView extends StatelessWidget {
   final AnimationController? animationController;
   final Animation<double>? animation;
 
-  const TitleView(
-      {Key? key,
-      this.titleTxt = "",
-      this.subTxt = "",
-      this.animationController,
-      this.animation})
-      : super(key: key);
+  const TitleView({Key? key, this.titleTxt = "", this.subTxt = "", this.animationController, this.animation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +17,7 @@ class TitleView extends StatelessWidget {
         return FadeTransition(
           opacity: animation!,
           child: new Transform(
-            transform: new Matrix4.translationValues(
-                0.0, 30 * (1.0 - animation!.value), 0.0),
+            transform: new Matrix4.translationValues(0.0, 30 * (1.0 - animation!.value), 0.0),
             child: Container(
               child: Padding(
                 padding: const EdgeInsets.only(left: 24, right: 24),
@@ -62,15 +55,16 @@ class TitleView extends StatelessWidget {
                                 color: FitnessAppTheme.nearlyDarkBlue,
                               ),
                             ),
-                            SizedBox(
-                              height: 38,
-                              width: 26,
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: FitnessAppTheme.darkText,
-                                size: 18,
+                            if (subTxt != "")
+                              SizedBox(
+                                height: 38,
+                                width: 26,
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  color: FitnessAppTheme.darkText,
+                                  size: 18,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

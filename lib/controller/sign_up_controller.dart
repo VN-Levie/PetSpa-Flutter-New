@@ -88,7 +88,9 @@ class SignUpController extends GetxController {
   // Function to resend OTP
   Future<void> resendOTP() async {
     try {
-      ApiResponse response = await RestService.post('/auth/resend-otp?email=$email', {});
+      ApiResponse response = await RestService.post('/auth/resend-otp?email=$email', {
+        'email': email,
+      });
       print("Response: ${response}");
       if (response.status == 200) {
         Get.snackbar("Success", "OTP sent successfully!");
@@ -181,7 +183,10 @@ class SignUpController extends GetxController {
     try {
       ApiResponse response = await RestService.post(
         '/auth/verify-otp?email=$email&otp=$otp',
-        {},
+        {
+          'email': email,
+          'otp': otp,
+        },
       );
 
       if (response.status == 200) {
